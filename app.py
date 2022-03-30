@@ -18,5 +18,9 @@ def create_connection(db_file):
 def render_home():
     return render_template("home.html")
 
+@app.route('/animals')
+def render_menu():
+    return render_template("animals.html")
+
 if __name__ == '__main__':
     app.run()
