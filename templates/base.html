@@ -28,10 +28,19 @@
             <li><a href="\animals">Animals</a></li>
 
         </ul>
-                <ul>
-            <li><a href="\login">Login</a></li>
+
+        --------------------------
+        {% if logged_in %}
+        <ul>
+            <li><a href="\login">Logout</a></li>
 
         </ul>
+        {% else %}
+        <ul>
+            <li><a href="\login">Login</a></li>
+        </ul>
+        {% endif %}
+
     </nav>
 
 

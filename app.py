@@ -4,7 +4,7 @@ from sqlite3 import Error
 from datetime import datetime
 
 app = Flask(__name__)
-DATABASE = "identifier.sqlite"
+DATABASE = "dictionary.db"
 app.secret_key = 'abcdefh1234567'
 
 
@@ -16,9 +16,11 @@ def create_connection(db_file):
         print(e)
     return None
 
+
 @app.route('/')
 def render_home():
-    return render_template("home.html")
+    return render_template("home.html", logged_in=is_logged_in())
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def render_login():
@@ -49,6 +51,7 @@ def render_login():
 
     return render_template("login.html", logged_in=is_logged_in())
 
+
 @app.route('/signup', methods=['POST', 'GET'])
 def render_signup():
     if request.method == 'POST':
@@ -67,7 +70,7 @@ def render_signup():
 
         con = create_connection(DATABASE)
 
-        query = "INSERT INTO customers (fname, lname, email, password) VALUES (?, ?, ?, ?)"
+        query = "INSERT INTO users (fname, lname, email, password) VALUES (?, ?, ?, ?)"
 
         cur = con.cursor()
 
@@ -85,18 +88,19 @@ def render_signup():
 
     return render_template("signup.html", logged_in=is_logged_in())
 
+
 def is_logged_in():
     if session.get("email") is None:
         print('Not Logged In')
         return False
     print('Logged In')
-
     return True
 
 
 @app.route('/animals')
 def render_menu():
-    return render_template("animals.html")
+    return render_template("animals.html", logged_in=is_logged_in())
+
 
 if __name__ == '__main__':
     app.run()
