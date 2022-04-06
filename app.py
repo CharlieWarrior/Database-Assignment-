@@ -8,6 +8,7 @@ DATABASE = "dictionary.db"
 app.secret_key = 'abcdefh1234567'
 
 
+
 def create_connection(db_file):
     try:
         connection = sqlite3.connect(db_file)
@@ -15,6 +16,14 @@ def create_connection(db_file):
     except Error as e:
         print(e)
     return None
+
+
+def is_logged_in():
+    if session.get("email") is None:
+        print('Not Logged In')
+        return False
+    print('Logged In')
+    return True
 
 
 @app.route('/')
@@ -89,17 +98,15 @@ def render_signup():
     return render_template("signup.html", logged_in=is_logged_in())
 
 
-def is_logged_in():
-    if session.get("email") is None:
-        print('Not Logged In')
-        return False
-    print('Logged In')
-    return True
-
-
 @app.route('/animals')
 def render_menu():
     return render_template("animals.html", logged_in=is_logged_in())
+
+
+@app.route('/logout')
+def render_logout():
+    session['email'] = None
+    return redirect('/')
 
 
 if __name__ == '__main__':
