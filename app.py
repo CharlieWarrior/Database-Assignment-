@@ -8,7 +8,6 @@ DATABASE = "dictionary.db"
 app.secret_key = 'abcdefh1234567'
 
 
-
 def create_connection(db_file):
     try:
         connection = sqlite3.connect(db_file)
@@ -26,9 +25,24 @@ def is_logged_in():
     return True
 
 
-@app.route('/')
+@app.route('/menu')
 def render_home():
     return render_template("home.html", logged_in=is_logged_in())
+
+
+@app.route('/category/<catID>')
+def render_home1(catID):
+    con = create_connection(DATABASE)
+    query = "SELECT id, name FROM categories ORDER BY name ASC"
+    cur = con.cursor
+    cur.execute(query)
+    category_list = cur.fetchall()
+    query = "SELECT id, maori_word, english_word, image FROM dictionary WHERE id ORDER BY maori_word ASC"
+    cur = con.cursor()
+    cur.execute(query, (catID,))
+    word_list = cur.fetchall()
+    con.close
+    return render_template("home.html", logged_in=is_logged_in(), categories=category_list, words=word_list)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -106,7 +120,7 @@ def render_menu():
 @app.route('/logout')
 def render_logout():
     session['email'] = None
-    return redirect('/')
+    return redirect('/login')
 
 
 if __name__ == '__main__':
