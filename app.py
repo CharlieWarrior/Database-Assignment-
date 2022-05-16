@@ -24,25 +24,41 @@ def is_logged_in():
     print('Logged In')
     return True
 
+def get_categories():
+    con = create_connection(DATABASE)
+    print(con)
+    query = "SELECT id, name FROM categories ORDER BY name ASC"
+    cur = con.cursor()
+    cur.execute(query)
+    category_list = cur.fetchall()
+    con.close()
+    return category_list
 
-@app.route('/menu')
+@app.route('/')
 def render_home():
-    return render_template("home.html", logged_in=is_logged_in())
+    return render_template("home.html", logged_in=is_logged_in(), categories=get_categories())
 
 
 @app.route('/category/<catID>')
 def render_home1(catID):
     con = create_connection(DATABASE)
-    query = "SELECT id, name FROM categories ORDER BY name ASC"
-    cur = con.cursor
-    cur.execute(query)
-    category_list = cur.fetchall()
-    query = "SELECT id, maori_word, english_word, image FROM dictionary WHERE id ORDER BY maori_word ASC"
+    query = "SELECT id, maori_word, english_word, image FROM dictionary WHERE cat_id=? ORDER BY maori_word ASC"
     cur = con.cursor()
-    cur.execute(query, (catID,))
+    cur.execute(query, (catID, ))
     word_list = cur.fetchall()
     con.close
-    return render_template("home.html", logged_in=is_logged_in(), categories=category_list, words=word_list)
+    return render_template("category.html", logged_in=is_logged_in(), categories=get_categories(), words=word_list)
+
+
+@app.route('/word/<ID>')
+def render_home2(ID):
+    con = create_connection(DATABASE)
+    query = "SELECT id, maori_word, english_word, image FROM dictionary WHERE id=? ORDER BY maori_word ASC"
+    cur = con.cursor()
+    cur.execute(query, (ID, ))
+    word_list = cur.fetchall()
+    con.close
+    return render_template("word.html", logged_in=is_logged_in(), categories=get_categories(), word=word_list[0])
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -110,11 +126,6 @@ def render_signup():
         return redirect('/login')
 
     return render_template("signup.html", logged_in=is_logged_in())
-
-
-@app.route('/animals')
-def render_menu():
-    return render_template("animals.html", logged_in=is_logged_in())
 
 
 @app.route('/logout')

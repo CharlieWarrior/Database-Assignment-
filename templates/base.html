@@ -22,21 +22,14 @@
         <span></span>
         <ul>
             <li><a href="\">Home</a></li>
-
-        </ul>
-        <ul>
-            <li><a href="\animals">Animals</a></li>
-
-        </ul>
+            {% for category in categories %}
+            <li><a href="/category/{{category[0]}}">{{category[1]}}</a></li>
+            {% endfor %}
 
         --------------------------
         {% if logged_in %}
-        <ul>
-            <li><a href="\logout">Logout</a></li>
-
-        </ul>
-        {% else %}
-        <ul>
+              <li><a href="\logout">Logout</a></li>
+    {% else %}
             <li><a href="\login">Login</a></li>
         </ul>
         {% endif %}
