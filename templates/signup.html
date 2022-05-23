@@ -5,7 +5,7 @@
 
 
 {% block main %}
-<form class="myform" method="post">
+<form class="dataForm" method="post">
     <div class="form-group">
         <div class="form-label">First Name:</div>
         <div class="form-element"><input type="text" name="fname" id="fname" required></div>
@@ -27,6 +27,11 @@
             <div class="form-label">Confirm Password:</div>
             <div class="form-element"><input type="password" name="password2" id="password2" required></div>
         </div>
+        <label for="usertype">Are you a teacher or student?:</label>
+        <select name="usertype" id="usertype">
+            <option value="teacher">Teacher</option>
+            <option value="student">Student</option>
+        </select>
         <div class="form-group">
             <div class="form-label"></div>
             <div class="form-element"><input type="submit" value="Signup"></div>

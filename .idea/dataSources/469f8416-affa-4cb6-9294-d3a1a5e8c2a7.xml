@@ -1450,7 +1450,11 @@
       <Position>5</Position>
       <DataType>char(60)|0s</DataType>
     </column>
-    <key id="521" parent="174" name="users_pk">
+    <column id="521" parent="174" name="usertype">
+      <Position>6</Position>
+      <DataType>varchar(30)|0s</DataType>
+    </column>
+    <key id="522" parent="174" name="users_pk">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>

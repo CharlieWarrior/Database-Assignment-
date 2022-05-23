@@ -53,7 +53,7 @@ def render_home1(catID):
 @app.route('/word/<ID>')
 def render_home2(ID):
     con = create_connection(DATABASE)
-    query = "SELECT id, maori_word, english_word, image FROM dictionary WHERE id=? ORDER BY maori_word ASC"
+    query = "SELECT id, maori_word, english_word, image, definition, editor_id, editted FROM dictionary WHERE id=? ORDER BY maori_word ASC"
     cur = con.cursor()
     cur.execute(query, (ID, ))
     word_list = cur.fetchall()
@@ -88,7 +88,7 @@ def render_login():
         print(session)
         return redirect('/')
 
-    return render_template("login.html", logged_in=is_logged_in())
+    return render_template("login.html", logged_in=is_logged_in(), categories=get_categories())
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -100,6 +100,7 @@ def render_signup():
         email = request.form.get('email').lower().strip()
         password = request.form.get('password')
         password2 = request.form.get('password2')
+        usertype = request.form.get('usertype')
 
         if password != password2:
             return redirect('/signup?error=Passwords+dont+match')
@@ -109,14 +110,14 @@ def render_signup():
 
         con = create_connection(DATABASE)
 
-        query = "INSERT INTO users (fname, lname, email, password) VALUES (?, ?, ?, ?)"
+        query = "INSERT INTO users (fname, lname, email, password, usertype) VALUES (?, ?, ?, ?, ?)"
 
         cur = con.cursor()
 
         # This Line Doesn't Work
 
         try:
-            cur.execute(query, (fname, lname, email, password))
+            cur.execute(query, (fname, lname, email, password, usertype))
         except sqlite3.IntegrityError:
             return redirect("/signup?error=Email+already+in+use")
 
@@ -125,7 +126,7 @@ def render_signup():
 
         return redirect('/login')
 
-    return render_template("signup.html", logged_in=is_logged_in())
+    return render_template("signup.html", logged_in=is_logged_in(), categories=get_categories())
 
 
 @app.route('/logout')
