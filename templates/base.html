@@ -26,10 +26,12 @@
             <li><a href="/category/{{category[0]}}">{{category[1]}}</a></li>
             {% endfor %}
 
-        --------------------------
-        {% if logged_in %}
-              <li><a href="\logout">Logout</a></li>
-    {% else %}
+            --------------------------
+            {% if logged_in %}
+            <li><a href="\logout">Logout</a></li>
+            {% if
+            <li><a href="\addword">Add Word</a></li>
+            {% else %}
             <li><a href="\login">Login</a></li>
         </ul>
         {% endif %}

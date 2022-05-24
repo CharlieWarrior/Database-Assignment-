@@ -46,7 +46,7 @@ def render_home1(catID):
     cur = con.cursor()
     cur.execute(query, (catID, ))
     word_list = cur.fetchall()
-    con.close
+    con.close()
     return render_template("category.html", logged_in=is_logged_in(), categories=get_categories(), words=word_list)
 
 
@@ -57,8 +57,13 @@ def render_home2(ID):
     cur = con.cursor()
     cur.execute(query, (ID, ))
     word_list = cur.fetchall()
-    con.close
-    return render_template("word.html", logged_in=is_logged_in(), categories=get_categories(), word=word_list[0])
+    query = "SELECT * FROM users WHERE id=?"
+    cur = con.cursor()
+    cur.execute(query, (word_list[0][5], ))
+    editor_list = cur.fetchall()
+
+    con.close()
+    return render_template("word.html", logged_in=is_logged_in(), categories=get_categories(), word=word_list[0], editor=editor_list[0])
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -114,8 +119,6 @@ def render_signup():
 
         cur = con.cursor()
 
-        # This Line Doesn't Work
-
         try:
             cur.execute(query, (fname, lname, email, password, usertype))
         except sqlite3.IntegrityError:
@@ -133,6 +136,10 @@ def render_signup():
 def render_logout():
     session['email'] = None
     return redirect('/login')
+
+@app.route('/addword')
+def render_addword():
+    return render_template("addword.html", logged_in=is_logged_in(), categories=get_categories())
 
 
 if __name__ == '__main__':
