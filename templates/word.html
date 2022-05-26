@@ -24,4 +24,10 @@
         <td>{{ word[6] }}</td>
     </tr>
 </table>
+{% if teacher %}
+        <div class="form-group">
+            <div class="form-label"></div>
+            <div class="form-element"><input type="submit" value="Delete this word"></div>
+        </div>
+{% endif %}
 {% endblock %}

@@ -24,6 +24,11 @@ def is_logged_in():
     print('Logged In')
     return True
 
+def is_teacher():
+    if session.get("usertype") == "student":
+        return False
+    return True
+
 def get_categories():
     con = create_connection(DATABASE)
     print(con)
@@ -36,7 +41,7 @@ def get_categories():
 
 @app.route('/')
 def render_home():
-    return render_template("home.html", logged_in=is_logged_in(), categories=get_categories())
+    return render_template("home.html", logged_in=is_logged_in(), categories=get_categories(), teacher=is_teacher())
 
 
 @app.route('/category/<catID>')
@@ -47,7 +52,7 @@ def render_home1(catID):
     cur.execute(query, (catID, ))
     word_list = cur.fetchall()
     con.close()
-    return render_template("category.html", logged_in=is_logged_in(), categories=get_categories(), words=word_list)
+    return render_template("category.html", logged_in=is_logged_in(), categories=get_categories(), words=word_list, teacher=is_teacher())
 
 
 @app.route('/word/<ID>')
@@ -63,7 +68,7 @@ def render_home2(ID):
     editor_list = cur.fetchall()
 
     con.close()
-    return render_template("word.html", logged_in=is_logged_in(), categories=get_categories(), word=word_list[0], editor=editor_list[0])
+    return render_template("word.html", logged_in=is_logged_in(), categories=get_categories(), word=word_list[0], editor=editor_list[0], teacher=is_teacher())
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -73,7 +78,7 @@ def render_login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        query = 'SELECT id, fname FROM users WHERE email=? AND password=?'
+        query = 'SELECT id, fname, usertype FROM users WHERE email=? AND password=?'
         con = create_connection(DATABASE)
         cur = con.cursor()
         cur.execute(query, (email, password))
@@ -83,6 +88,7 @@ def render_login():
         try:
             user_id = user_data[0][0]
             fname = user_data[0][1]
+            user_type = user_data[0][2]
             print(user_id, fname)
         except IndexError:
             return redirect("/login?error=Email+invalid")
@@ -90,10 +96,11 @@ def render_login():
         session['email'] = email
         session['userid'] = user_id
         session['fname'] = fname
+        session['usertype'] = user_type
         print(session)
         return redirect('/')
 
-    return render_template("login.html", logged_in=is_logged_in(), categories=get_categories())
+    return render_template("login.html", logged_in=is_logged_in(), categories=get_categories(), teacher=is_teacher())
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -129,7 +136,7 @@ def render_signup():
 
         return redirect('/login')
 
-    return render_template("signup.html", logged_in=is_logged_in(), categories=get_categories())
+    return render_template("signup.html", logged_in=is_logged_in(), categories=get_categories(), teacher=is_teacher())
 
 
 @app.route('/logout')
@@ -137,9 +144,30 @@ def render_logout():
     session['email'] = None
     return redirect('/login')
 
-@app.route('/addword')
+@app.route('/addword', methods=['POST', 'GET'])
 def render_addword():
-    return render_template("addword.html", logged_in=is_logged_in(), categories=get_categories())
+    if request.method == 'POST':
+        print(request.form)
+
+        maori_word = request.form.get('mword').title().strip()
+        definition = request.form.get('dword').title().strip()
+        level = request.form.get('ylevel')
+        english_word = request.form.get('eword').title().strip()
+        image = 'noimage.png'
+        cat_id = request.form.get('category')
+        editor_id = 1
+        editted = datetime.now()
+
+        con = create_connection(DATABASE)
+
+        query = "INSERT INTO dictionary (id, maori_word, definition, level, english_word, image, cat_id, editted, editor_id) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)"
+        cur = con.cursor()
+        cur.execute(query, (maori_word, definition, level, english_word, image, cat_id, editted, editor_id))
+        con.commit()
+        con.close()
+
+        return redirect('/')
+    return render_template("addword.html", logged_in=is_logged_in(), categories=get_categories(), teacher=is_teacher())
 
 
 if __name__ == '__main__':

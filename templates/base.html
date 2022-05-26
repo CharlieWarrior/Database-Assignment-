@@ -29,8 +29,9 @@
             --------------------------
             {% if logged_in %}
             <li><a href="\logout">Logout</a></li>
-            {% if
+            {% if teacher %}
             <li><a href="\addword">Add Word</a></li>
+            {% endif %}
             {% else %}
             <li><a href="\login">Login</a></li>
         </ul>
