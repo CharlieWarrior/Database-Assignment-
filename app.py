@@ -47,7 +47,7 @@ def render_home():
 @app.route('/category/<catID>')
 def render_home1(catID):
     con = create_connection(DATABASE)
-    query = "SELECT id, maori_word, english_word, image FROM dictionary WHERE cat_id=? ORDER BY maori_word ASC"
+    query = "SELECT id, maori_word, english_word, image, level FROM dictionary WHERE cat_id=? ORDER BY maori_word ASC"
     cur = con.cursor()
     cur.execute(query, (catID, ))
     word_list = cur.fetchall()

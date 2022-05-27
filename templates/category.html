@@ -9,12 +9,14 @@
     <tr>
         <th>Maori</th>
         <th>English</th>
+        <th>Level</th>
         <th>Image</th>
     </tr>
     {% for word in words %}
     <tr>
         <td><a href="/word/{{ word[0] }}">{{ word[1] }}</a></td>
         <td>{{ word[2] }}</td>
+        <td>{{ word[4] }}</td>
         <td width="100"><img src="/static/images/{{ word[3] }}"></td>
     </tr>
     {% endfor %}
