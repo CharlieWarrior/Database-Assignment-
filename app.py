@@ -58,7 +58,7 @@ def render_home1(catID):
 @app.route('/word/<ID>')
 def render_home2(ID):
     con = create_connection(DATABASE)
-    query = "SELECT id, maori_word, english_word, image, definition, editor_id, editted FROM dictionary WHERE id=? ORDER BY maori_word ASC"
+    query = "SELECT id, maori_word, english_word, image, definition, editor_id, editted, cat_id FROM dictionary WHERE id=? ORDER BY maori_word ASC"
     cur = con.cursor()
     cur.execute(query, (ID, ))
     word_list = cur.fetchall()
@@ -149,13 +149,13 @@ def render_addword():
     if request.method == 'POST':
         print(request.form)
 
-        maori_word = request.form.get('mword').title().strip()
-        definition = request.form.get('dword').title().strip()
+        maori_word = request.form.get('mword').lower().strip()
+        definition = request.form.get('dword').lower().strip()
         level = request.form.get('ylevel')
-        english_word = request.form.get('eword').title().strip()
+        english_word = request.form.get('eword').lower().strip()
         image = 'noimage.png'
         cat_id = request.form.get('category')
-        editor_id = 1
+        editor_id = session['userid']
         editted = datetime.now()
 
         con = create_connection(DATABASE)
@@ -169,6 +169,22 @@ def render_addword():
         return redirect('/')
     return render_template("addword.html", logged_in=is_logged_in(), categories=get_categories(), teacher=is_teacher())
 
+@app.route('/delete/<cat_id>/<word_id>')
+def render_delete(cat_id, word_id):
+    return render_template("delete.html", logged_in=is_logged_in(), categories=get_categories(), teacher=is_teacher(),
+                           cat_id=cat_id, word_id=word_id)
+
+
+@app.route('/deleteconfirmed/<cat_id>/<word_id>')
+def delete_word(cat_id, word_id):
+    con = create_connection(DATABASE)
+    query = "DELETE FROM dictionary WHERE id=?"
+    cur = con.cursor()
+    cur.execute(query, (word_id, ))
+    con.commit()
+    con.close()
+
+    return redirect("/category/{}".format(cat_id))
 
 if __name__ == '__main__':
     app.run()
